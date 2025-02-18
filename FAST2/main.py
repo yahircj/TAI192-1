@@ -30,3 +30,21 @@ def agregarTarea(tarea:dict):
             raise HTTPException(status_code=400, detail="el id ya exite")
     tareas.append(tarea)
     return tarea
+
+     #Endpoint actualizar tareas
+@app.put('/tarea/{id}', tags=['Operaciones CRUD'])
+def actualizar(id:int,tareaActualizada:dict):
+    for index, usr in enumerate(tareas):
+        if usr["id"] == id:
+           tareas[index].update(tareaActualizada)
+           return tareas[index]
+    raise HTTPException(status_code=404, detail="tarea no encontrada")
+    
+   #Endpoint eliminar
+@app.delete('/tarea/{id}', tags=['Operaciones CRUD'])
+def eliminar(id:int):
+    for index, usr in enumerate(tareas):
+        if usr["id"] == id:
+           tareas.pop(index)
+           return {"tarea eliminada"}
+    raise HTTPException(status_code=404, detail="tarea no encontrada")
