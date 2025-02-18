@@ -20,4 +20,13 @@ tareas = [
     #Endpoint consultas todos
 @app.get('/todaslasTareas/', tags=['Operaciones CRUD'])
 def leerTareas():
-    return {'Los usuarios registrados son': tareas}
+    return {'Las tareas registradas son': tareas}
+
+            #Endpoint agregar nueva tarea
+@app.post('/tarea/', tags=['Operaciones CRUD'])
+def agregarTarea(tarea:dict):
+    for usr in tareas:
+        if usr["id"] == tarea.get("id"):
+            raise HTTPException(status_code=400, detail="el id ya exite")
+    tareas.append(tarea)
+    return tarea
