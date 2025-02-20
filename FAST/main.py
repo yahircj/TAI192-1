@@ -1,17 +1,25 @@
 from fastapi import FastAPI, HTTPException
-from typing import Optional
+from typing import Optional,List
+from pydantic import BaseModel
+
 #se definen 3 parametros
 app= FastAPI(
     title='mi primerAPI 192',
     description='christian montalvo moreno',
     version='1.0.1'
 )
+class ModeloUsuario(BaseModel):
+    id:int
+    nombre:str
+    edad:int
+    correo:str
+#BD ficticia
 usuarios = [
-    {"id": 1, "nombre":"christian", "edad":25},
-    {"id": 2, "nombre":"uriel", "edad":22},
-    {"id": 3, "nombre":"luis", "edad":21},
-    {"id": 4, "nombre":"toño", "edad":20},
-    {"id": 5, "nombre":"samu", "edad":14}
+    {"id": 1, "nombre":"christian", "edad":25, "correo":"inf.chris@gmail.com"},
+    {"id": 2, "nombre":"uriel", "edad":22, "correo":"inf.chris@gmail.com"},
+    {"id": 3, "nombre":"luis", "edad":21, "correo":"inf.chris@gmail.com"},
+    {"id": 4, "nombre":"toño", "edad":20, "correo":"inf.chris@gmail.com"},
+    {"id": 5, "nombre":"samu", "edad":14, "correo":"inf.chris@gmail.com"}
     
 ]
 
@@ -21,7 +29,7 @@ def home():
     return {'hello':'world FastAPI'}
 
     #Endpoint consultas todos
-@app.get('/todosUsuarios/', tags=['Operaciones CRUD'])
+@app.get('/todosUsuarios/',response_model= List[ModeloUsuario] ,tags=['Operaciones CRUD'])
 def leerUsuario():
     return {'Los usuarios registrados son': usuarios}
 
