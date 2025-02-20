@@ -21,6 +21,14 @@ tareas = [
 @app.get('/todaslasTareas/', tags=['Operaciones CRUD'])
 def leerTareas():
     return {'Las tareas registradas son': tareas}
+    
+#Endpoint buscar por ID
+@app.get('/tareas/{tareas_id}', tags=['Lista de Tareas'])
+def obtenerTareas(tareas_id: int):
+    for ta in tareas:
+        if ta["id"] == tareas_id:
+            return {"La tarea encontrada es": ta}
+    raise HTTPException(status_code=404, detail="No se encontró la tarea")
 
             #Endpoint agregar nueva tarea
 @app.post('/tarea/', tags=['Operaciones CRUD'])
