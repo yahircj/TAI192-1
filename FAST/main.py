@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
-from typing import List
-from models import Usuario
+from fastapi.responses import JSONResponse
+from typing import Optional,List
+from modelsPydantic import Usuario, modeloAuth
+from genToken import crearToken
 
 app = FastAPI(
     title="Mi primera API 192",
@@ -21,10 +23,13 @@ lista_usuarios = [
 def inicio():
     return {"mensaje": "Bienvenido a FastAPI."}
 
+
 # Obtener todos los usuarios
 @app.get("/usuarios", response_model=List[Usuario], tags=["Operaciones CRUD"])
 def obtener_usuarios():
     return lista_usuarios
+
+
 
 # Agregar un nuevo usuario
 @app.post("/usuarios", response_model=Usuario, tags=["Operaciones CRUD"])
@@ -34,6 +39,8 @@ def agregar_usuario(usuario: Usuario):
             raise HTTPException(status_code=400, detail="El ID ya existe.")
     lista_usuarios.append(usuario.model_dump())
     return usuario
+
+
 
 # Actualizar usuario 
 @app.put("/usuarios/{id_usuario}", response_model=Usuario, tags=["Operaciones CRUD"])
@@ -45,6 +52,8 @@ def actualizar_usuario(id_usuario: int, usuarioActualizar: Usuario):
     
     raise HTTPException(status_code=404, detail="Usuario no encontrado.")
 
+
+
 # Endpoint Agregar Usuarios DELETE
 @app.delete("/usuario/{id_usuario}", tags=["Operaciones CRUD"])
 def deleteUsuario(id_usuario: int):
@@ -54,5 +63,18 @@ def deleteUsuario(id_usuario: int):
             return {"mensaje": "Usuario eliminado correctamente."}
         else:
             raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
+
+
+
+ #endpoint auteticacion
+@app.post("/auth", tags=["autetificacion"])
+def login(autorizacion:modeloAuth):
+    if autorizacion.email =='christian@example.com' and autorizacion.passw == '123456789':
+       token:str = crearToken(autorizacion.model_dump())
+       print(token)
+       return JSONResponse(content= token) 
+    else:
+       return{"aviso":"usuario no autorizado"}     
 
 
