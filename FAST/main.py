@@ -1,66 +1,58 @@
 from fastapi import FastAPI, HTTPException
-from typing import Optional,List
-from pydantic import BaseModel
+from typing import List
+from models import Usuario
 
-#se definen 3 parametros
-app= FastAPI(
-    title='mi primerAPI 192',
-    description='christian montalvo moreno',
-    version='1.0.1'
+app = FastAPI(
+    title="Mi primera API 192",
+    description="Maria Monserrat Campuzano Leon",
+    version="1.0.1"
 )
-class ModeloUsuario(BaseModel):
-    id:int
-    nombre:str
-    edad:int
-    correo:str
-#BD ficticia
-usuarios = [
-    {"id": 1, "nombre":"christian", "edad":25, "correo":"inf.chris@gmail.com"},
-    {"id": 2, "nombre":"uriel", "edad":22, "correo":"inf.chris@gmail.com"},
-    {"id": 3, "nombre":"luis", "edad":21, "correo":"inf.chris@gmail.com"},
-    {"id": 4, "nombre":"toño", "edad":20, "correo":"inf.chris@gmail.com"},
-    {"id": 5, "nombre":"samu", "edad":14, "correo":"inf.chris@gmail.com"}
-    
+
+# Lista de usuarios simulando una base de datos
+lista_usuarios = [
+    {"id": 1, "nombre": "monchis", "edad": 22, "correo": "example@example.com"},
+    {"id": 2, "nombre": "alejandro", "edad": 24, "correo": "example2@example.com"},
+    {"id": 3, "nombre": "maria", "edad": 20, "correo": "example3@example.com"},
+    {"id": 4, "nombre": "felix", "edad": 23, "correo": "example4@example.com"}
 ]
 
-#Endpoint home
-@app.get('/', tags=['hola mundo'])
-def home():
-    return {'hello':'world FastAPI'}
+# Endpoint de inicio
+@app.get("/", tags=["Inicio"])
+def inicio():
+    return {"mensaje": "Bienvenido a FastAPI."}
 
-    #Endpoint consultas todos
-@app.get('/todosUsuarios/',response_model= List[ModeloUsuario] ,tags=['Operaciones CRUD'])
-def leerUsuario():
-    return {'Los usuarios registrados son': usuarios}
+# Obtener todos los usuarios
+@app.get("/usuarios", response_model=List[Usuario], tags=["Operaciones CRUD"])
+def obtener_usuarios():
+    return lista_usuarios
 
-        #Endpoint agregar nuevo
-@app.post('/usuario/', tags=['Operaciones CRUD'])
-def agregarUsuario(usuario:dict):
-    for usr in usuarios:
-        if usr["id"] == usuario.get("id"):
-            raise HTTPException(status_code=400, detail="el id ya exite")
-    usuarios.append(usuario)
+# Agregar un nuevo usuario
+@app.post("/usuarios", response_model=Usuario, tags=["Operaciones CRUD"])
+def agregar_usuario(usuario: Usuario):
+    for usr in lista_usuarios:
+        if usr["id"] == usuario.id:
+            raise HTTPException(status_code=400, detail="El ID ya existe.")
+    lista_usuarios.append(usuario.model_dump())
     return usuario
 
-        #Endpoint actualizar
-@app.put('/usuario/{id}', tags=['Operaciones CRUD'])
-def actualizar(id:int,usuarioActualizado:dict):
-    for index, usr in enumerate(usuarios):
-        if usr["id"] == id:
-           usuarios[index].update(usuarioActualizado)
-           return usuarios[index]
-    raise HTTPException(status_code=404, detail="usuario no encontrado")
+# Actualizar usuario 
+@app.put("/usuarios/{id_usuario}", response_model=Usuario, tags=["Operaciones CRUD"])
+def actualizar_usuario(id_usuario: int, usuarioActualizar: Usuario):
+    for i, usr in enumerate(lista_usuarios):
+        if usr["id"] == id_usuario:
+            lista_usuarios[i] = usuarioActualizar.model_dump()
+            return lista_usuarios[i]
     
-   #Endpoint eliminar
-@app.delete('/usuario/{id}', tags=['Operaciones CRUD'])
-def eliminar(id:int):
-    for index, usr in enumerate(usuarios):
-        if usr["id"] == id:
-           usuarios.pop(index)
-           return {"usuario eliminado"}
-    raise HTTPException(status_code=404, detail="usuario no encontrado")
+    raise HTTPException(status_code=404, detail="Usuario no encontrado.")
 
-
-
+# Endpoint Agregar Usuarios DELETE
+@app.delete("/usuario/{id_usuario}", tags=["Operaciones CRUD"])
+def deleteUsuario(id_usuario: int):
+    for index, usr in enumerate(lista_usuarios):
+        if usr["id"] == id_usuario:
+            lista_usuarios.pop(index)
+            return {"mensaje": "Usuario eliminado correctamente."}
+        else:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado.")
 
 
