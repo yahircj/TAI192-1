@@ -1,9 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI,HTTPException,Depends
 from fastapi.responses import JSONResponse
 from typing import Optional,List
 from modelsPydantic import Usuario, modeloAuth
 from genToken import crearToken
-
+from middlewares import BearerJWT
 app = FastAPI(
     title="Mi primera API 192",
     description="Maria Monserrat Campuzano Leon",
@@ -17,6 +17,16 @@ lista_usuarios = [
     {"id": 3, "nombre": "maria", "edad": 20, "correo": "example3@example.com"},
     {"id": 4, "nombre": "felix", "edad": 23, "correo": "example4@example.com"}
 ]
+ #endpoint auteticacion
+@app.post("/auth", tags=["autetificacion"])
+def login(autorizacion:modeloAuth):
+    if autorizacion.email =='christian@example.com' and autorizacion.passw == '123456789':
+       token:str = crearToken(autorizacion.model_dump())
+       print(token)
+       return JSONResponse(content= token) 
+    else:
+       return{"aviso":"usuario no autorizado"}     
+
 
 # Endpoint de inicio
 @app.get("/", tags=["Inicio"])
@@ -25,7 +35,7 @@ def inicio():
 
 
 # Obtener todos los usuarios
-@app.get("/usuarios", response_model=List[Usuario], tags=["Operaciones CRUD"])
+@app.get("/usuarios", dependencies=[Depends(BearerJWT())], response_model=List[Usuario], tags=["Operaciones CRUD"])
 def obtener_usuarios():
     return lista_usuarios
 
@@ -67,14 +77,5 @@ def deleteUsuario(id_usuario: int):
 
 
 
- #endpoint auteticacion
-@app.post("/auth", tags=["autetificacion"])
-def login(autorizacion:modeloAuth):
-    if autorizacion.email =='christian@example.com' and autorizacion.passw == '123456789':
-       token:str = crearToken(autorizacion.model_dump())
-       print(token)
-       return JSONResponse(content= token) 
-    else:
-       return{"aviso":"usuario no autorizado"}     
 
 
