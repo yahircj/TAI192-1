@@ -6,7 +6,10 @@ class Usuario(BaseModel):
     nombre: str = Field(..., min_length=3, max_length=85, description="Solo letras: mínimo 3, máximo 85 caracteres")
     edad: int = Field(..., gt=0, description="Edad debe ser un número positivo y realista")
     correo: EmailStr = Field(..., description="Debe ser un correo electrónico válido", example="correo@example.com")
-    
+    #gt mayor que
+    #ge mayor o igual
+    #lt menor que 
+    #le menor o igual que
 
 
 class modeloAuth(BaseModel):
