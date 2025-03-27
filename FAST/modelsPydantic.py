@@ -1,17 +1,11 @@
 from pydantic import BaseModel, Field, EmailStr
 
-# Modelo
-class Usuario(BaseModel):
-    id: int = Field(..., gt=0, description="ID único y solo positivos")
-    nombre: str = Field(..., min_length=3, max_length=85, description="Solo letras: mínimo 3, máximo 85 caracteres")
-    edad: int = Field(..., gt=0, description="Edad debe ser un número positivo y realista")
-    correo: EmailStr = Field(..., description="Debe ser un correo electrónico válido", example="correo@example.com")
-    #gt mayor que
-    #ge mayor o igual
-    #lt menor que 
-    #le menor o igual que
+class modeloUsuario(BaseModel):
+    name:str = Field(...,min_length=3, max_length=85, description="Nombre con mínimo de 3 letras y máximo a 85.")
+    age:int = Field(..., ge=1, le=120)
+    email:EmailStr = Field(..., examples=["Usuario23@gmail.com"])
 
 
 class modeloAuth(BaseModel):
-     email: EmailStr = Field(..., description="Debe ser un correo electrónico válido", example="correo@example.com")
-     passw: str= Field(..., min_length=8, strip_whitespace=True,description="contraseña minimo 8 caracteres")
+    email:EmailStr = Field(..., description="Correo electrónico válido", example="correo@example.com")
+    passw: str = Field(..., min_length=8, strip_whitesapce=True, description="Contraseña de mínimo 8 caractéres")
