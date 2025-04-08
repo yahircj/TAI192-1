@@ -14,21 +14,18 @@ from routers.fechasabastecimiento import routerFechasAbastecimiento
 from DB.populate_db import poblar_datos
 
 
-
-
-
 app = FastAPI(
     title="API de Gestión de Clientes, Usuarios y Productos",
     description="API desarrollada con FastAPI y SQLAlchemy. Soporta autenticación JWT y operaciones CRUD.",
     version="1.0.0"
 )
 
-# Crear tablas automaticamente si no existen
-Base.metadata.create_all(bind=engine)
+# Inyecta (crea) las tablas en el startup de la aplicación.
+@app.on_event("startup")
+async def startup_event():
+    Base.metadata.create_all(bind=engine)
+    print("Tablas creadas/inyectadas en la base de datos.")
 
-poblar_datos()
-
-# Ruta principal de prueba
 @app.get("/", tags=["Inicio"])
 def home():
     return {"mensaje": "¡Bienvenido a la API con FastAPI, SQLAlchemy y JWT!"}
