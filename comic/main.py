@@ -11,6 +11,8 @@ from routers.pedidos import routerPedidos
 from routers.detallepedidos import routerDetallePedidos
 from routers.estadospedidos import routerEstadosPedidos
 from routers.fechasabastecimiento import routerFechasAbastecimiento
+from DB.populate_db import poblar_datos
+
 
 
 
@@ -23,6 +25,8 @@ app = FastAPI(
 
 # Crear tablas automaticamente si no existen
 Base.metadata.create_all(bind=engine)
+
+poblar_datos()
 
 # Ruta principal de prueba
 @app.get("/", tags=["Inicio"])
